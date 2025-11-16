@@ -6,7 +6,13 @@
       "Bash(pip install:*)",
       "Bash(python test_app.py:*)",
       "Bash(./venv/bin/python:*)",
-      "Bash(chmod:*)"
+      "Bash(chmod:*)",
+      "Bash(brew services:*)",
+      "Bash(docker-compose up:*)",
+      "Bash(docker compose:*)",
+      "Bash(createdb:*)",
+      "Bash(export FLASK_ENV=\"development\")",
+      "Bash(python -c:*)"
     ],
     "deny": [],
     "ask": []
