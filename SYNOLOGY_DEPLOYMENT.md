@@ -90,7 +90,39 @@ cd app
 - Use File Station to upload your project files to `/volume1/docker/codility-tracker/app/`
 - Or use SFTP client (like FileZilla) to upload files
 
-### Step 4: Create Docker Compose File
+### Step 4: Create Dockerfile
+
+Create `Dockerfile` in `/volume1/docker/codility-tracker/app/`:
+
+```dockerfile
+FROM python:3.11-slim
+
+# Set working directory
+WORKDIR /app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    gcc \
+    postgresql-client \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy requirements first for better caching
+COPY requirements.txt .
+
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy application code
+COPY . .
+
+# Expose port
+EXPOSE 5000
+
+# The CMD will be overridden by docker-compose
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "app:app"]
+```
+
+### Step 5: Create Docker Compose File
 
 Create `docker-compose.yml` in `/volume1/docker/codility-tracker/`:
 
@@ -119,13 +151,14 @@ services:
 
   # Flask Web Application
   web:
-    image: python:3.11-slim
+    build:
+      context: ./app
+      dockerfile: Dockerfile
     container_name: codility-web
     restart: always
     working_dir: /app
     command: >
-      sh -c "pip install --no-cache-dir -r requirements.txt &&
-             python -c 'from app import app, db; app.app_context().push(); db.create_all()' &&
+      sh -c "python -c 'from app import app, db; app.app_context().push(); db.create_all()' &&
              gunicorn --bind 0.0.0.0:5000 --workers 2 app:app"
     environment:
       DATABASE_URL: postgresql://codility_user:change_this_secure_password_123@postgres:5432/codility_tracker
@@ -149,7 +182,7 @@ volumes:
   postgres_data:
 ```
 
-### Step 5: Generate Secret Key
+### Step 6: Generate Secret Key
 
 ```bash
 # Generate a secure secret key
@@ -157,14 +190,19 @@ python3 -c 'import secrets; print(secrets.token_hex(32))'
 # Copy the output and replace "generate_a_random_secret_key_here" in docker-compose.yml
 ```
 
-### Step 6: Start the Application
+### Step 7: Build and Start the Application
 
 ```bash
 cd /volume1/docker/codility-tracker
+
+# Build the containers (first time or after code changes)
+sudo docker-compose build
+
+# Start the application
 sudo docker-compose up -d
 ```
 
-### Step 7: Check Status
+### Step 8: Check Status
 
 ```bash
 # Check if containers are running
@@ -173,9 +211,13 @@ sudo docker-compose ps
 # View logs
 sudo docker-compose logs -f web
 sudo docker-compose logs -f postgres
+
+# If you see "ModuleNotFoundError: No module named 'psycopg2'",
+# the build didn't complete. Check build logs:
+sudo docker-compose logs web
 ```
 
-### Step 8: Access Your App
+### Step 9: Access Your App
 
 Open browser and go to: `http://your-nas-ip:5000`
 Example: `http://192.168.1.100:5000`
@@ -441,31 +483,47 @@ exit
 
 ### ModuleNotFoundError: No module named 'psycopg2'
 
-This error occurs when PostgreSQL dependencies are missing.
+This is the most common error! It occurs when the Docker container doesn't have PostgreSQL dependencies installed.
 
-**Solution 1: Install psycopg2-binary**
+**Root Cause:**
+The base python image doesn't include build tools needed for psycopg2.
+
+**SOLUTION: Rebuild using the Dockerfile**
+
 ```bash
-# Already included in requirements.txt (version 2.9.9)
-# Rebuild containers to install it
+cd /volume1/docker/codility-tracker
+
+# Stop and remove containers
 sudo docker-compose down
-sudo docker-compose up -d --build
+
+# Rebuild with proper Dockerfile (includes psycopg2)
+sudo docker-compose build --no-cache
+
+# Start containers
+sudo docker-compose up -d
+
+# Verify psycopg2 is installed
+sudo docker exec codility-web python -c "import psycopg2; print('✓ psycopg2 installed successfully!')"
 ```
 
-**Solution 2: If using SQLite instead**
-If you're using SQLite, you don't need psycopg2. Update your DATABASE_URL:
+**What the Dockerfile does:**
+- Installs system dependencies (gcc, libpq-dev, postgresql-client)
+- Installs all Python packages from requirements.txt
+- Creates a properly built image with everything pre-installed
+
+**Make sure you have these files:**
+1. `Dockerfile` in `/volume1/docker/codility-tracker/app/`
+2. `docker-compose.yml` updated to use `build` instead of `image`
+
+**Alternative: Use SQLite (no PostgreSQL needed)**
+If you want to avoid PostgreSQL complexity:
 ```yaml
-# In docker-compose.yml
+# In docker-compose.yml, change environment:
 environment:
   DATABASE_URL: sqlite:///codility_progress.db
-  # Remove psycopg2-binary from requirements.txt if using SQLite only
 ```
 
-**Solution 3: Manual installation**
-```bash
-sudo docker exec -it codility-web bash
-pip install psycopg2-binary==2.9.9
-exit
-```
+Then you don't need psycopg2 at all!
 
 ---
 

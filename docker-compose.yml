@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: codility-postgres
+    restart: always
+    environment:
+      POSTGRES_DB: codility_tracker
+      POSTGRES_USER: codility_user
+      POSTGRES_PASSWORD: codility_password_change_this
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - codility-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U codility_user"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "5432:5432"
+
+  # Flask Web Application
+  web:
+    build: .
+    container_name: codility-web
+    restart: always
+    environment:
+      DATABASE_URL: postgresql://codility_user:codility_password_change_this@postgres:5432/codility_tracker
+      SECRET_KEY: dev-secret-key-change-in-production
+      FLASK_ENV: production
+    ports:
+      - "5000:5000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - codility-network
+    command: >
+      sh -c "python -c 'from app import app, db; app.app_context().push(); db.create_all()' &&
+             gunicorn --bind 0.0.0.0:5000 --workers 2 --reload app:app"
+
+networks:
+  codility-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
