@@ -1,0 +1,48 @@
+CODILITY TRAINING TRACKER - COMPLETE FILE LISTING
+==================================================
+
+ROOT DIRECTORY FILES:
+- app.py                    Main Flask application (350+ lines)
+- requirements.txt          Python dependencies
+- Procfile                  Heroku/Railway deployment config
+- runtime.txt              Python version for hosting
+- .env.example             Environment variables template
+- .gitignore               Git ignore rules
+- run.sh                   Quick start script (executable)
+- test_app.py              Test suite
+
+DOCUMENTATION:
+- README.md                 Full project documentation
+- QUICKSTART.md            5-minute setup guide
+- DEPLOYMENT.md            Hosting platform guides (Heroku, Railway, Render, PythonAnywhere)
+- PROJECT_SUMMARY.md       Technical overview
+- FEATURES.md              Feature descriptions
+- PROJECT_FILES.txt        This file
+
+TEMPLATES (HTML):
+- templates/base.html      Base layout with navigation
+- templates/index.html     Dashboard with stats and week grid
+- templates/week.html      Week detail view with daily tasks
+
+STATIC ASSETS:
+- static/css/style.css     Complete styling (500+ lines)
+- static/js/app.js         Client-side JavaScript
+
+GENERATED (not in git):
+- venv/                    Virtual environment folder
+- codility_progress.db     SQLite database (created on first run)
+- __pycache__/            Python cache
+
+TOTAL PROJECT SIZE:
+- Code files: ~1000 lines Python, ~800 lines HTML/CSS/JS
+- Dependencies: ~20MB
+- Documentation: Comprehensive
+- Ready to deploy: Yes
+
+DEPLOYMENT PLATFORMS SUPPORTED:
+✓ Heroku
+✓ Railway
+✓ Render
+✓ PythonAnywhere
+
+ALL TESTS PASSING: ✅

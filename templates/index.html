@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Codility Training Plan{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+    <div class="stats-section">
+        <h2>Your Progress</h2>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number">{{ stats.completed_days }}</div>
+                <div class="stat-label">Days Completed</div>
+                <div class="stat-total">out of {{ stats.total_days }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ stats.completed_tasks }}</div>
+                <div class="stat-label">Tasks Completed</div>
+                <div class="stat-total">out of {{ stats.total_tasks }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ stats.progress_percentage }}%</div>
+                <div class="stat-label">Overall Progress</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: {{ stats.progress_percentage }}%"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="weeks-section">
+        <h2>8-Week Training Plan</h2>
+        <div class="weeks-grid">
+            {% for week_num, week_data in weeks.items() %}
+            <div class="week-card">
+                <div class="week-header">
+                    <h3>Week {{ week_num }}</h3>
+                    <span class="week-emoji">
+                        {% if week_num == 1 %}🟦
+                        {% elif week_num == 2 %}🟩
+                        {% elif week_num == 3 %}🟧
+                        {% elif week_num == 4 %}🟨
+                        {% elif week_num == 5 %}🟥
+                        {% elif week_num == 6 %}🟫
+                        {% elif week_num == 7 %}🟪
+                        {% elif week_num == 8 %}🟧
+                        {% endif %}
+                    </span>
+                </div>
+                <h4>{{ week_data.title.split('–')[1].strip() }}</h4>
+                <p class="week-focus"><strong>Focus:</strong> {{ week_data.focus }}</p>
+                <p class="week-days">{{ week_data.days|length }} days</p>
+                <a href="{{ url_for('week_view', week_num=week_num) }}" class="btn btn-primary">View Week</a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="tips-section">
+        <h2>Training Tips</h2>
+        <ul class="tips-list">
+            <li>Dedicate 2 hours per day consistently</li>
+            <li>Always try to solve problems yourself before looking at solutions</li>
+            <li>Focus on understanding the patterns, not memorizing solutions</li>
+            <li>Take mock tests seriously - simulate real exam conditions</li>
+            <li>Review and redo difficult problems multiple times</li>
+            <li>Track your progress and identify weak areas</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}

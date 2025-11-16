@@ -1,0 +1,185 @@
+{% extends "base.html" %}
+
+{% block title %}Week {{ week_num }} - Codility Training Plan{% endblock %}
+
+{% block content %}
+<div class="week-view">
+    <div class="week-header-section">
+        <a href="{{ url_for('index') }}" class="back-link">&larr; Back to Dashboard</a>
+        <h2>Week {{ week_num }}: {{ week_data.title }}</h2>
+        <p class="week-focus"><strong>Focus:</strong> {{ week_data.focus }}</p>
+    </div>
+
+    <div class="days-section">
+        {% for day_num, day_data in week_data.days.items() %}
+        <div class="day-card {% if progress[day_num].day_completed %}completed{% endif %}">
+            <div class="day-header">
+                <div class="day-title-section">
+                    <h3>Day {{ day_num }}: {{ day_data.title }}</h3>
+                    <label class="checkbox-container">
+                        <input type="checkbox"
+                               class="day-checkbox"
+                               data-week="{{ week_num }}"
+                               data-day="{{ day_num }}"
+                               {% if progress[day_num].day_completed %}checked{% endif %}>
+                        <span class="checkmark"></span>
+                        <span class="checkbox-label">Mark day as complete</span>
+                    </label>
+                </div>
+            </div>
+
+            {% if day_data.topics %}
+            <div class="topics-section">
+                <h4>Topics:</h4>
+                <ul>
+                    {% for topic in day_data.topics %}
+                    <li>{{ topic }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+
+            {% if day_data.tasks %}
+            <div class="tasks-section">
+                <h4>Tasks to Complete:</h4>
+                <ul class="tasks-list">
+                    {% for task in day_data.tasks %}
+                    <li class="task-item">
+                        <label class="checkbox-container">
+                            <input type="checkbox"
+                                   class="task-checkbox"
+                                   data-week="{{ week_num }}"
+                                   data-day="{{ day_num }}"
+                                   data-task="{{ task }}"
+                                   {% if progress[day_num].tasks.get(task, {}).get('completed') %}checked{% endif %}>
+                            <span class="checkmark"></span>
+                            <span class="task-name">{{ task }}</span>
+                        </label>
+                        {% if 'MOCK TEST' in day_data.title or 'Mock Test' in task %}
+                        <input type="number"
+                               class="score-input"
+                               placeholder="Score %"
+                               min="0"
+                               max="100"
+                               data-week="{{ week_num }}"
+                               data-day="{{ day_num }}"
+                               data-task="{{ task }}"
+                               value="{{ progress[day_num].tasks.get(task, {}).get('score') or '' }}">
+                        {% endif %}
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+
+            <div class="notes-section">
+                <h4>Notes:</h4>
+                <textarea class="notes-textarea"
+                          data-week="{{ week_num }}"
+                          data-day="{{ day_num }}"
+                          placeholder="Add your notes, solutions, or reflections here...">{{ progress[day_num].notes }}</textarea>
+                <button class="btn btn-small save-notes-btn"
+                        data-week="{{ week_num }}"
+                        data-day="{{ day_num }}">Save Notes</button>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Handle day completion toggle
+document.querySelectorAll('.day-checkbox').forEach(checkbox => {
+    checkbox.addEventListener('change', async function() {
+        const week = this.dataset.week;
+        const day = this.dataset.day;
+
+        const response = await fetch('/api/toggle_day', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({week: parseInt(week), day: parseInt(day)})
+        });
+
+        const data = await response.json();
+        if (data.success) {
+            const dayCard = this.closest('.day-card');
+            if (data.completed) {
+                dayCard.classList.add('completed');
+            } else {
+                dayCard.classList.remove('completed');
+            }
+        }
+    });
+});
+
+// Handle task completion toggle
+document.querySelectorAll('.task-checkbox').forEach(checkbox => {
+    checkbox.addEventListener('change', async function() {
+        const week = this.dataset.week;
+        const day = this.dataset.day;
+        const task = this.dataset.task;
+
+        await fetch('/api/toggle_task', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                week: parseInt(week),
+                day: parseInt(day),
+                task_name: task
+            })
+        });
+    });
+});
+
+// Handle score updates
+document.querySelectorAll('.score-input').forEach(input => {
+    input.addEventListener('change', async function() {
+        const week = this.dataset.week;
+        const day = this.dataset.day;
+        const task = this.dataset.task;
+        const score = parseInt(this.value);
+
+        await fetch('/api/update_task_score', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                week: parseInt(week),
+                day: parseInt(day),
+                task_name: task,
+                score: score
+            })
+        });
+    });
+});
+
+// Handle notes saving
+document.querySelectorAll('.save-notes-btn').forEach(button => {
+    button.addEventListener('click', async function() {
+        const week = this.dataset.week;
+        const day = this.dataset.day;
+        const textarea = document.querySelector(`textarea[data-week="${week}"][data-day="${day}"]`);
+        const notes = textarea.value;
+
+        const response = await fetch('/api/update_notes', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                week: parseInt(week),
+                day: parseInt(day),
+                notes: notes
+            })
+        });
+
+        const data = await response.json();
+        if (data.success) {
+            this.textContent = 'Saved!';
+            setTimeout(() => {
+                this.textContent = 'Save Notes';
+            }, 2000);
+        }
+    });
+});
+</script>
+{% endblock %}
