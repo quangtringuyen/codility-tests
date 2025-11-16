@@ -2,161 +2,94 @@
 
 This guide provides detailed instructions for deploying the Codility Training Tracker to various hosting platforms.
 
+## Recommended Platform: PythonAnywhere (Truly Free Forever!)
+
+**For truly free hosting with persistent database, we recommend PythonAnywhere.** Render's PostgreSQL expires after 30 days. Railway and Heroku removed their free tiers.
+
 ## Table of Contents
-1. [Heroku](#heroku)
-2. [Railway](#railway)
-3. [Render](#render)
-4. [PythonAnywhere](#pythonanywhere)
-5. [General Tips](#general-tips)
-
----
-
-## Heroku
-
-Heroku is a popular platform-as-a-service (PaaS) that makes deployment simple.
-
-### Prerequisites
-- Heroku account (free tier available)
-- Heroku CLI installed
-- Git installed
-
-### Steps
-
-1. **Login to Heroku**
-   ```bash
-   heroku login
-   ```
-
-2. **Create a new Heroku app**
-   ```bash
-   heroku create codility-tracker-yourname
-   ```
-
-3. **Add PostgreSQL database**
-   ```bash
-   heroku addons:create heroku-postgresql:hobby-dev
-   ```
-
-4. **Set environment variables**
-   ```bash
-   heroku config:set SECRET_KEY=$(python -c 'import secrets; print(secrets.token_hex(32))')
-   heroku config:set FLASK_ENV=production
-   ```
-
-5. **Initialize Git (if not already done)**
-   ```bash
-   git init
-   git add .
-   git commit -m "Initial commit"
-   ```
-
-6. **Deploy to Heroku**
-   ```bash
-   git push heroku main
-   ```
-   (If your branch is named 'master', use `git push heroku master`)
-
-7. **Open your app**
-   ```bash
-   heroku open
-   ```
-
-### Troubleshooting Heroku
-- View logs: `heroku logs --tail`
-- Check app status: `heroku ps`
-- Restart app: `heroku restart`
-
----
-
-## Railway
-
-Railway offers modern deployment with automatic GitHub integration.
-
-### Prerequisites
-- Railway account
-- GitHub account
-- Code pushed to GitHub repository
-
-### Steps
-
-1. **Sign up at [railway.app](https://railway.app)**
-
-2. **Create a new project**
-   - Click "New Project"
-   - Select "Deploy from GitHub repo"
-   - Choose your repository
-
-3. **Add PostgreSQL database**
-   - In your project dashboard
-   - Click "New" → "Database" → "PostgreSQL"
-   - Railway automatically sets DATABASE_URL
-
-4. **Set environment variables**
-   - Go to your web service
-   - Click "Variables" tab
-   - Add:
-     - `SECRET_KEY`: Generate with `python -c 'import secrets; print(secrets.token_hex(32))'`
-     - `FLASK_ENV`: `production`
-
-5. **Deploy**
-   - Railway automatically deploys on push to main branch
-   - Click on the generated URL to view your app
-
-### Automatic Deployments
-Railway automatically redeploys when you push to GitHub.
+1. [PythonAnywhere](#pythonanywhere) - **RECOMMENDED** - Truly free forever with SQLite
+2. [Render](#render) - Free web hosting (PostgreSQL expires in 30 days, use SQLite)
+3. [Fly.io](#flyio) - Free tier available (requires credit card)
+4. [Railway](#railway) - **PAID** ($5/month minimum after trial)
+5. [Heroku](#heroku) - **PAID** (No free tier as of Nov 2022)
+6. [General Tips](#general-tips)
 
 ---
 
 ## Render
 
-Render provides free hosting with PostgreSQL databases.
+**Best free web hosting, but PostgreSQL expires after 30 days**
 
-### Prerequisites
-- Render account
-- GitHub account
-- Code pushed to GitHub repository
+Render provides free web hosting with auto-deploy from GitHub. However, their free PostgreSQL databases expire after 30 days and are deleted after a 14-day grace period.
 
-### Steps
+### ⚠️ Important Limitations
+
+- **Web Service**: Free forever, sleeps after 15 min inactivity
+- **PostgreSQL Database**: **EXPIRES AFTER 30 DAYS** and gets **DELETED** after 14-day grace period
+- **No backups** on free PostgreSQL tier
+
+**Recommendation**: Use Render for web hosting, but use **SQLite** instead of PostgreSQL to avoid database expiration.
+
+### Option 1: Render with SQLite (Recommended for Free Users)
+
+Since PostgreSQL expires, use SQLite for truly persistent free hosting:
 
 1. **Sign up at [render.com](https://render.com)**
 
 2. **Create a Web Service**
    - Click "New +" → "Web Service"
    - Connect your GitHub repository
-   - Give it a name
+   - Name: `codility-tracker`
 
 3. **Configure Build Settings**
    - **Environment**: Python 3
    - **Build Command**: `pip install -r requirements.txt`
    - **Start Command**: `gunicorn app:app`
+   - **Plan**: Free
 
-4. **Create PostgreSQL Database**
-   - Click "New +" → "PostgreSQL"
-   - Choose free tier
-   - Note the Internal Database URL
-
-5. **Set Environment Variables**
-   In your Web Service settings, add:
-   - `DATABASE_URL`: (copy from PostgreSQL internal URL)
+4. **Set Environment Variables**
    - `SECRET_KEY`: Generate with `python -c 'import secrets; print(secrets.token_hex(32))'`
    - `FLASK_ENV`: `production`
+   - `DATABASE_URL`: `sqlite:///codility_progress.db` (SQLite, no expiration)
+
+5. **Add Persistent Disk** (Critical for SQLite!)
+   - In service settings, add a "Disk"
+   - Mount path: `/opt/render/project/src`
+   - This ensures your SQLite database persists across deploys
 
 6. **Deploy**
    - Click "Create Web Service"
-   - Render automatically builds and deploys
-   - Access via the provided URL
+   - Wait 3-5 minutes for deployment
 
-### Automatic Deployments
-Render auto-deploys on commits to main branch.
+### Option 2: Render with PostgreSQL (Only for 8-week duration)
+
+Only use if you'll finish your training in 30 days or willing to recreate DB monthly:
+
+1. Create PostgreSQL database (Free tier) - **Expires in 30 days!**
+2. Follow steps above but use PostgreSQL DATABASE_URL
+3. **Set calendar reminder** to backup data before 30-day expiration
+
+### Important Notes
+- **Free tier sleeps after 15 minutes of inactivity** (~30 sec wake time)
+- **SQLite is better for free tier** - no expiration, persistent
+- Auto-deploys on every GitHub push to main branch
+- **No credit card required**
+
+### Troubleshooting Render
+- View logs: Click "Logs" tab in dashboard
+- Check build: Click "Events" tab
+- Manual deploy: Click "Manual Deploy" → "Deploy latest commit"
 
 ---
 
 ## PythonAnywhere
 
-PythonAnywhere is ideal for Python web apps with free tier available.
+**Free tier with SQLite - Good for simple deployments**
+
+PythonAnywhere is ideal for Python web apps with a generous free tier.
 
 ### Prerequisites
-- PythonAnywhere account
+- PythonAnywhere account (sign up free)
 
 ### Steps
 
@@ -164,7 +97,7 @@ PythonAnywhere is ideal for Python web apps with free tier available.
 
 2. **Upload your code**
 
-   **Option A: Using Git**
+   **Option A: Using Git (Recommended)**
    ```bash
    git clone https://github.com/yourusername/codility-tracker.git
    cd codility-tracker
@@ -217,7 +150,151 @@ PythonAnywhere is ideal for Python web apps with free tier available.
    - Your app will be at: `yourusername.pythonanywhere.com`
 
 ### Note on Database
-PythonAnywhere free tier uses SQLite. For PostgreSQL, upgrade to paid tier.
+- Free tier uses **SQLite** (works fine for this app)
+- For PostgreSQL, upgrade to paid tier ($5/month)
+- **No credit card required for free tier**
+
+---
+
+## Fly.io
+
+**Free tier with PostgreSQL - Developer-friendly**
+
+Fly.io offers a generous free tier with PostgreSQL support.
+
+### Prerequisites
+- Fly.io account
+- Fly CLI installed
+
+### Steps
+
+1. **Install Fly CLI**
+   ```bash
+   # Mac
+   brew install flyctl
+
+   # Linux
+   curl -L https://fly.io/install.sh | sh
+
+   # Windows
+   powershell -Command "iwr https://fly.io/install.ps1 -useb | iex"
+   ```
+
+2. **Login to Fly**
+   ```bash
+   fly auth login
+   ```
+
+3. **Launch your app**
+   ```bash
+   fly launch
+   ```
+   - Choose app name
+   - Select region closest to you
+   - Say "Yes" to PostgreSQL database
+   - Say "No" to Redis
+
+4. **Set environment variables**
+   ```bash
+   fly secrets set SECRET_KEY=$(python -c 'import secrets; print(secrets.token_hex(32))')
+   fly secrets set FLASK_ENV=production
+   ```
+
+5. **Deploy**
+   ```bash
+   fly deploy
+   ```
+
+### Free Tier Limits
+- 3 VMs with 256MB RAM each
+- 3GB persistent storage
+- 160GB outbound data transfer
+- **No credit card required**
+
+---
+
+## Railway
+
+**IMPORTANT: Railway is NO LONGER FREE**
+
+Railway removed their free tier in 2023. Current pricing:
+
+### Pricing (2025)
+- **Trial**: $5 one-time credit (expires in 30 days)
+- **After trial**: Services shut down unless you upgrade
+- **Hobby plan**: $5/month minimum (includes $5 usage credit)
+
+### Steps (If you choose to pay)
+
+1. **Sign up at [railway.app](https://railway.app)**
+
+2. **Add payment method** (required after trial)
+
+3. **Create a new project**
+   - Click "New Project"
+   - Select "Deploy from GitHub repo"
+   - Choose your repository
+
+4. **Add PostgreSQL database**
+   - Click "New" → "Database" → "PostgreSQL"
+   - Railway automatically sets DATABASE_URL
+
+5. **Set environment variables**
+   - Go to your web service
+   - Click "Variables" tab
+   - Add:
+     - `SECRET_KEY`: Generate with `python -c 'import secrets; print(secrets.token_hex(32))'`
+     - `FLASK_ENV`: `production`
+
+6. **Deploy**
+   - Railway automatically deploys
+   - Auto-redeploys on GitHub push
+
+---
+
+## Heroku
+
+**IMPORTANT: Heroku is NO LONGER FREE**
+
+Heroku eliminated all free tiers in November 2022.
+
+### Current Pricing
+- **Eco dynos**: $5/month (sleeps after inactivity)
+- **Basic dynos**: $7/month (doesn't sleep)
+- **Postgres**: $5/month minimum
+
+### Heroku Deployment Steps
+
+1. **Install Heroku CLI and login**
+   ```bash
+   heroku login
+   ```
+
+2. **Create a new Heroku app**
+   ```bash
+   heroku create codility-tracker-yourname
+   ```
+
+3. **Add PostgreSQL database**
+   ```bash
+   heroku addons:create heroku-postgresql:essential-0  # $5/month
+   ```
+
+4. **Set environment variables**
+   ```bash
+   heroku config:set SECRET_KEY=$(python -c 'import secrets; print(secrets.token_hex(32))')
+   heroku config:set FLASK_ENV=production
+   ```
+
+5. **Deploy to Heroku**
+   ```bash
+   git push heroku main
+   ```
+
+6. **Open your app**
+   ```bash
+   heroku open
+   ```
 
 ---
 
@@ -250,12 +327,15 @@ with app.app_context():
 - Monitor database size (free tiers have limits)
 - Set up uptime monitoring (UptimeRobot, etc.)
 
-### Cost Optimization
-All platforms mentioned offer free tiers suitable for this app:
-- **Heroku**: 550-1000 free dyno hours/month
-- **Railway**: $5 free credit/month
-- **Render**: Free tier with limitations
-- **PythonAnywhere**: Free tier with 512MB storage
+### Cost Comparison (2025)
+
+| Platform | Free Tier | Database Persistence | Notes |
+|----------|-----------|---------------------|-------|
+| **PythonAnywhere** | ✅ Yes | ✅ SQLite forever | **BEST FREE OPTION** - No expiration |
+| **Render** | ✅ Yes | ⚠️ SQLite (with disk) OR PostgreSQL (30 days) | App sleeps after 15min, PostgreSQL expires! |
+| **Fly.io** | ✅ Yes | ✅ PostgreSQL forever | Requires credit card verification |
+| **Railway** | ❌ Trial only | ✅ Paid | $5/month after $5 trial credit expires |
+| **Heroku** | ❌ No | ❌ Paid | Minimum $5/month for dynos + $5 for DB |
 
 ### Database Backups
 - Heroku: `heroku pg:backups:capture`
@@ -278,14 +358,35 @@ If you encounter issues:
 4. Check Python version compatibility
 5. Review application logs for errors
 
-## Platform Comparison
+## Platform Comparison (Updated 2025)
 
-| Feature | Heroku | Railway | Render | PythonAnywhere |
-|---------|--------|---------|--------|----------------|
-| Free Tier | ✓ | ✓ | ✓ | ✓ |
-| Auto-deploy from GitHub | ✓ | ✓ | ✓ | ✗ |
-| Free PostgreSQL | ✓ | ✓ | ✓ | ✗ (paid only) |
-| Custom Domain | ✓ (paid) | ✓ | ✓ | ✓ (paid) |
-| Ease of Use | ⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐ |
+| Feature | PythonAnywhere | Render | Fly.io | Railway | Heroku |
+|---------|----------------|--------|--------|---------|--------|
+| **Truly Free Forever** | ✅ Yes | ⚠️ Web only | ✅ Yes | ❌ Trial only | ❌ No |
+| **Database Persistence** | ✅ SQLite forever | ⚠️ PostgreSQL 30 days only | ✅ PostgreSQL forever | ✅ Paid | ✅ Paid |
+| **Auto-deploy from GitHub** | ❌ Manual | ✅ Yes | ⚠️ CLI | ✅ Yes | ✅ Yes |
+| **Cold Start Time** | Instant | ~30 sec | ~5 sec | Instant | Instant |
+| **Credit Card Required** | ❌ No | ❌ No | ✅ Yes | ✅ After trial | ✅ Yes |
+| **Ease of Use** | ⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ |
+| **Best For** | Long-term free hosting | Short-term projects | Developers | Paid projects | Enterprise |
 
-**Recommendation**: For beginners, start with **Railway** or **Render** for easiest deployment.
+### Recommendations
+
+**🏆 Best Overall Free Option: PythonAnywhere**
+- No credit card required
+- SQLite database persists forever (no expiration!)
+- Perfect for 8-week training plan
+- Free tier never expires
+- Ideal for beginners
+
+**🥈 Runner Up: Render (with SQLite + Persistent Disk)**
+- Auto-deploys from GitHub
+- Use SQLite with persistent disk (NOT PostgreSQL)
+- PostgreSQL free tier expires after 30 days
+- Good if you want GitHub auto-deploy
+
+**🥉 Advanced Option: Fly.io**
+- PostgreSQL that doesn't expire
+- Requires credit card for verification
+- CLI-based (for developers)
+- Fast cold starts

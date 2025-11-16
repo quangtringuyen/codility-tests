@@ -65,64 +65,43 @@ http://localhost:5000
 
 ## Deployment
 
-This app can be deployed to various hosting platforms:
+Deploy your app for **FREE** to access it from anywhere!
 
-### Heroku
+### PythonAnywhere (Recommended - Truly Free Forever!)
 
-1. Install Heroku CLI
-2. Login to Heroku:
-```bash
-heroku login
-```
+**Best free option - No expiration, no credit card required!**
 
-3. Create a new app:
-```bash
-heroku create your-app-name
-```
+1. Sign up at [pythonanywhere.com](https://www.pythonanywhere.com)
+2. Upload code via Git or file upload
+3. Create virtual environment and install dependencies
+4. Create web app (Flask)
+5. Configure WSGI file
+6. Deploy!
 
-4. Add PostgreSQL addon:
-```bash
-heroku addons:create heroku-postgresql:hobby-dev
-```
+**Pros**: Free forever, SQLite database never expires, instant startup
+**Cons**: Manual deployment (no auto-deploy from GitHub)
 
-5. Set environment variables:
-```bash
-heroku config:set SECRET_KEY=$(python -c 'import secrets; print(secrets.token_hex(32))')
-```
+### Render (Free web hosting, but database issues)
 
-6. Deploy:
-```bash
-git push heroku main
-```
+**⚠️ Warning**: Render's free PostgreSQL **expires after 30 days** and gets deleted!
 
-### Railway
+**Option 1**: Use Render with SQLite + Persistent Disk (recommended if using Render)
+**Option 2**: Use PostgreSQL knowing it expires in 30 days
 
-1. Create account at [railway.app](https://railway.app)
-2. Click "New Project" → "Deploy from GitHub repo"
-3. Select your repository
-4. Railway will auto-detect Python and deploy
-5. Add PostgreSQL database from Railway's dashboard
-6. Set environment variable `SECRET_KEY` in Railway dashboard
+See [DEPLOYMENT.md](DEPLOYMENT.md) for detailed Render setup with persistent SQLite.
 
-### Render
+### Fly.io (Free tier, requires credit card)
 
-1. Create account at [render.com](https://render.com)
-2. Click "New +" → "Web Service"
-3. Connect your GitHub repository
-4. Configure:
-   - **Build Command**: `pip install -r requirements.txt`
-   - **Start Command**: `gunicorn app:app`
-5. Add PostgreSQL database from Render dashboard
-6. Set environment variable `SECRET_KEY` in Render dashboard
+- Free tier with PostgreSQL that doesn't expire
+- Requires credit card for verification
+- CLI-based deployment
 
-### PythonAnywhere
+### Paid Options
 
-1. Create account at [pythonanywhere.com](https://www.pythonanywhere.com)
-2. Upload your code via Git or file upload
-3. Create a new web app (Flask)
-4. Configure WSGI file to point to your app
-5. Set up virtual environment
-6. Reload the web app
+**Railway** - $5/month after trial
+**Heroku** - $5/month minimum (no free tier)
+
+See [DEPLOYMENT.md](DEPLOYMENT.md) for detailed instructions for all platforms.
 
 ## Environment Variables
 

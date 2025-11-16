@@ -76,24 +76,39 @@ That's it! The script will:
 4. Redo tasks you struggled with
 5. Take mock tests seriously
 
-## Deploy to Production
+## Deploy to Production (100% FREE!)
 
 Choose your platform:
 
-### Railway (Recommended for beginners)
-1. Push code to GitHub
-2. Create account at railway.app
-3. Click "New Project" → "Deploy from GitHub repo"
-4. Add PostgreSQL database
-5. Set SECRET_KEY environment variable
-6. Deploy!
+### PythonAnywhere (Recommended - Truly Free Forever!)
+
+**No credit card, no expiration, database persists forever!**
+
+1. Sign up at [pythonanywhere.com](https://www.pythonanywhere.com)
+2. Upload code via Git: `git clone your-repo-url`
+3. Create virtual environment: `mkvirtualenv --python=/usr/bin/python3.10 myenv`
+4. Install dependencies: `pip install -r requirements.txt`
+5. Create web app → Manual configuration → Python 3.10
+6. Configure WSGI file to point to your app
+7. Deploy!
+
+**Database**: SQLite (never expires, completely free)
 
 [See DEPLOYMENT.md for detailed instructions](DEPLOYMENT.md)
 
+### Render (Free but with limitations)
+
+**⚠️ WARNING**: PostgreSQL expires after 30 days!
+
+- Use SQLite + Persistent Disk instead
+- Free tier sleeps after 15 min (~30 sec wake time)
+- Auto-deploy from GitHub
+
 ### Other Platforms
-- **Heroku**: Great for developers familiar with Git
-- **Render**: Free tier with PostgreSQL
-- **PythonAnywhere**: Python-specific hosting
+
+- **Fly.io**: Free tier (requires credit card verification)
+- **Railway**: $5/month after trial (NOT free)
+- **Heroku**: $5/month minimum (NOT free)
 
 ## Troubleshooting
 
