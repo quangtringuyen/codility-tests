@@ -17,7 +17,7 @@ ENV/
 *.sqlite3
 
 # Environment
-.env
+# .env is needed by docker-compose, so don't exclude it
 .venv
 
 # IDE
