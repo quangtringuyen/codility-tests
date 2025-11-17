@@ -2,6 +2,8 @@ from flask import Flask, render_template, request, redirect, url_for, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 import os
+import markdown
+from pathlib import Path
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///codility_progress.db')
@@ -305,6 +307,57 @@ def get_overall_stats():
         'completed_tasks': completed_tasks,
         'progress_percentage': int((completed_days / total_days) * 100) if total_days > 0 else 0
     }
+
+# Lessons routes
+@app.route('/lessons')
+def lessons_index():
+    """Display all available lessons"""
+    lessons_dir = Path(__file__).parent / 'lessons'
+
+    lessons_list = [
+        {'file': 'README.md', 'title': 'Lessons Overview', 'week': 0},
+        {'file': 'CHEAT_SHEET.md', 'title': 'Pattern Cheat Sheet', 'week': 0},
+        {'file': 'week1-foundations.md', 'title': 'Week 1: Foundations', 'week': 1},
+        {'file': 'week2-counting-prefix-hashmaps.md', 'title': 'Week 2: Counting & Prefix Sums', 'week': 2},
+        {'file': 'week3-sorting-greedy-math.md', 'title': 'Week 3: Sorting & Greedy', 'week': 3},
+        {'file': 'week4-stacks-queues-leaders.md', 'title': 'Week 4: Stacks & Leaders', 'week': 4},
+        {'file': 'week5-slices-dp.md', 'title': 'Week 5: Maximum Slices & DP', 'week': 5},
+        {'file': 'week6-binary-search-peaks-sieve.md', 'title': 'Week 6: Binary Search & Sieve', 'week': 6},
+        {'file': 'week7-review-practice.md', 'title': 'Week 7: Review & Practice', 'week': 7},
+        {'file': 'week8-final-mocks.md', 'title': 'Week 8: Final Mock Tests', 'week': 8},
+    ]
+
+    return render_template('lessons.html', lessons=lessons_list)
+
+@app.route('/lessons/<lesson_file>')
+def view_lesson(lesson_file):
+    """Display a specific lesson with markdown rendered as HTML"""
+    lessons_dir = Path(__file__).parent / 'lessons'
+    lesson_path = lessons_dir / lesson_file
+
+    # Security: prevent directory traversal
+    if not lesson_path.is_file() or '..' in lesson_file:
+        return "Lesson not found", 404
+
+    try:
+        with open(lesson_path, 'r', encoding='utf-8') as f:
+            content = f.read()
+
+        # Convert markdown to HTML with extensions
+        md = markdown.Markdown(extensions=['extra', 'codehilite', 'toc', 'fenced_code'])
+        html_content = md.convert(content)
+
+        # Extract title from first heading
+        title = lesson_file.replace('.md', '').replace('-', ' ').title()
+        if content.startswith('#'):
+            title = content.split('\n')[0].replace('#', '').strip()
+
+        return render_template('lesson_view.html',
+                             title=title,
+                             content=html_content,
+                             lesson_file=lesson_file)
+    except Exception as e:
+        return f"Error loading lesson: {str(e)}", 500
 
 if __name__ == '__main__':
     with app.app_context():

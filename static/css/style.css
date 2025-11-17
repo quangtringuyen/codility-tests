@@ -51,6 +51,11 @@ body {
     font-weight: bold;
 }
 
+.nav-links {
+    display: flex;
+    gap: 1rem;
+}
+
 .nav-link {
     color: var(--text-primary);
     text-decoration: none;
