@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}TypeScript Playground - Codility Tracker{% endblock %}
+
+{% block content %}
+<div class="playground-page">
+    <div class="playground-header">
+        <h1>TypeScript Playground</h1>
+        <p class="text-muted">Write, compile, and run TypeScript code in your browser</p>
+    </div>
+
+    <div class="playground-toolbar">
+        <div class="toolbar-left">
+            <select id="templateSelector" class="template-select">
+                <option value="">Load Template...</option>
+                <option value="basic">Basic Function</option>
+                <option value="array">Array Manipulation</option>
+                <option value="prefix">Prefix Sum</option>
+                <option value="twopointer">Two Pointer</option>
+                <option value="stack">Stack Usage</option>
+                <option value="hashmap">HashMap/Object</option>
+                <option value="greedy">Greedy Algorithm</option>
+                <option value="dp">Dynamic Programming</option>
+            </select>
+        </div>
+        <div class="toolbar-right">
+            <button id="clearBtn" class="btn btn-outline-secondary btn-small">Clear</button>
+            <button id="runBtn" class="btn btn-primary btn-small">▶ Run Code</button>
+        </div>
+    </div>
+
+    <div class="playground-container">
+        <div class="editor-panel">
+            <div class="panel-header">
+                <span>TypeScript Code</span>
+                <button id="copyCodeBtn" class="btn-icon" title="Copy code">📋</button>
+            </div>
+            <div id="editor" class="code-editor"></div>
+        </div>
+
+        <div class="output-panel">
+            <div class="panel-header">
+                <span>Output</span>
+                <button id="clearOutputBtn" class="btn-icon" title="Clear output">🗑️</button>
+            </div>
+            <div id="output" class="code-output">
+                <div class="output-placeholder">
+                    Click "Run Code" to see the output here...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="playground-tips">
+        <h3>💡 Tips</h3>
+        <ul>
+            <li>Use <code>console.log()</code> to print output</li>
+            <li>The editor has full TypeScript support with IntelliSense</li>
+            <li>Load templates to get started quickly</li>
+            <li>Press <kbd>Ctrl/Cmd + S</kbd> to run code</li>
+            <li>Code is automatically saved in your browser</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs/loader.js"></script>
+<script src="{{ url_for('static', filename='js/playground.js') }}"></script>
+{% endblock %}

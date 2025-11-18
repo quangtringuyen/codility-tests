@@ -308,6 +308,12 @@ def get_overall_stats():
         'progress_percentage': int((completed_days / total_days) * 100) if total_days > 0 else 0
     }
 
+# Playground route
+@app.route('/playground')
+def playground():
+    """TypeScript code playground"""
+    return render_template('playground.html')
+
 # Lessons routes
 @app.route('/lessons')
 def lessons_index():
