@@ -16,7 +16,9 @@
       "Bash(find:*)",
       "Bash(bash -n:*)",
       "Bash(test:*)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(./venv/bin/pip:*)",
+      "Bash(unset:*)"
     ],
     "deny": [],
     "ask": []
