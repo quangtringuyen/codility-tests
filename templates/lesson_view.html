@@ -11,14 +11,38 @@
         <h1>{{ title }}</h1>
     </div>
 
+    <!-- Lesson Completion Checkbox -->
+    <div class="lesson-complete-wrapper">
+        <label class="checkbox-container">
+            <input type="checkbox" id="lessonComplete" data-lesson="{{ lesson_file }}">
+            <span class="checkmark"></span>
+            <span class="lesson-complete-label">Mark this lesson as complete</span>
+        </label>
+    </div>
+
     <div class="lesson-content">
         {{ content|safe }}
     </div>
 
-    <div style="margin-top: 32px; text-align: center;">
-        <a href="{{ url_for('lessons_index') }}" class="btn btn-outline-secondary">
-            <span class="bi-arrow-left"></span> Back to All Lessons
+    <!-- Previous/Next Navigation -->
+    <div class="lesson-navigation">
+        {% if prev_lesson %}
+        <a href="{{ url_for('view_lesson', lesson_file=prev_lesson.file) }}" class="nav-lesson prev">
+            <span class="nav-lesson-label">← Previous</span>
+            <span class="nav-lesson-title">{{ prev_lesson.title }}</span>
         </a>
+        {% else %}
+        <div style="flex: 1;"></div>
+        {% endif %}
+
+        {% if next_lesson %}
+        <a href="{{ url_for('view_lesson', lesson_file=next_lesson.file) }}" class="nav-lesson next">
+            <span class="nav-lesson-label">Next →</span>
+            <span class="nav-lesson-title">{{ next_lesson.title }}</span>
+        </a>
+        {% else %}
+        <div style="flex: 1;"></div>
+        {% endif %}
     </div>
 </div>
 {% endblock %}

@@ -352,10 +352,33 @@ def view_lesson(lesson_file):
         if content.startswith('#'):
             title = content.split('\n')[0].replace('#', '').strip()
 
+        # Get all lessons for navigation
+        lessons_list = [
+            {'file': 'README.md', 'title': 'Lessons Overview', 'week': 0},
+            {'file': 'CHEAT_SHEET.md', 'title': 'Pattern Cheat Sheet', 'week': 0},
+            {'file': 'week1-foundations.md', 'title': 'Week 1: Foundations', 'week': 1},
+            {'file': 'week2-counting-prefix-hashmaps.md', 'title': 'Week 2: Counting & Prefix Sums', 'week': 2},
+            {'file': 'week3-sorting-greedy-math.md', 'title': 'Week 3: Sorting & Greedy', 'week': 3},
+            {'file': 'week4-stacks-queues-leaders.md', 'title': 'Week 4: Stacks & Leaders', 'week': 4},
+            {'file': 'week5-slices-dp.md', 'title': 'Week 5: Maximum Slices & DP', 'week': 5},
+            {'file': 'week6-binary-search-peaks-sieve.md', 'title': 'Week 6: Binary Search & Sieve', 'week': 6},
+            {'file': 'week7-review-practice.md', 'title': 'Week 7: Review & Practice', 'week': 7},
+            {'file': 'week8-final-mocks.md', 'title': 'Week 8: Final Mock Tests', 'week': 8},
+        ]
+
+        # Find current lesson index
+        current_index = next((i for i, l in enumerate(lessons_list) if l['file'] == lesson_file), None)
+
+        # Get prev/next lessons
+        prev_lesson = lessons_list[current_index - 1] if current_index and current_index > 0 else None
+        next_lesson = lessons_list[current_index + 1] if current_index is not None and current_index < len(lessons_list) - 1 else None
+
         return render_template('lesson_view.html',
                              title=title,
                              content=html_content,
-                             lesson_file=lesson_file)
+                             lesson_file=lesson_file,
+                             prev_lesson=prev_lesson,
+                             next_lesson=next_lesson)
     except Exception as e:
         return f"Error loading lesson: {str(e)}", 500
 

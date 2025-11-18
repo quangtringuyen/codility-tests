@@ -32,24 +32,33 @@
     --warning: var(--codility-orange);
     --danger: var(--codility-red);
 
-    /* Backgrounds */
+    /* Light mode colors (default) */
     --bg-main: #f8f9fa;
     --bg-card: var(--white);
     --bg-hover: var(--gray-100);
-
-    /* Text */
     --text-primary: var(--gray-900);
     --text-secondary: var(--gray-700);
     --text-muted: var(--gray-600);
-
-    /* Borders */
     --border-color: var(--gray-300);
     --border-light: var(--gray-200);
-
-    /* Shadows */
     --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.12);
     --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
     --shadow-lg: 0 10px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* Dark mode colors */
+body.dark-mode {
+    --bg-main: #1a1a1a;
+    --bg-card: #242424;
+    --bg-hover: #2d2d2d;
+    --text-primary: #e0e0e0;
+    --text-secondary: #b0b0b0;
+    --text-muted: #888888;
+    --border-color: #3a3a3a;
+    --border-light: #2d2d2d;
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 10px 20px rgba(0, 0, 0, 0.5);
 }
 
 body {
@@ -1015,4 +1024,255 @@ footer {
 .score-badge.low {
     background: #ffcdd2;
     color: #c62828;
+}
+
+/* Dark Mode Toggle */
+.theme-toggle {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    padding: 6px 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    color: var(--text-secondary);
+    transition: all 0.2s ease;
+}
+
+.theme-toggle:hover {
+    background: var(--bg-hover);
+    border-color: var(--secondary);
+}
+
+.theme-toggle-icon {
+    font-size: 16px;
+}
+
+/* Reading Progress Bar */
+.reading-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 0%;
+    height: 3px;
+    background: linear-gradient(90deg, var(--secondary), var(--codility-green));
+    z-index: 1000;
+    transition: width 0.1s ease;
+}
+
+/* Copy Code Button */
+.code-block-wrapper {
+    position: relative;
+}
+
+.copy-code-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #e0e0e0;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: 500;
+}
+
+.copy-code-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.copy-code-btn.copied {
+    background: var(--success);
+    border-color: var(--success);
+    color: white;
+}
+
+/* Lesson Navigation */
+.lesson-navigation {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 48px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border-color);
+    gap: 16px;
+}
+
+.nav-lesson {
+    flex: 1;
+    padding: 16px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.nav-lesson:hover {
+    border-color: var(--secondary);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+}
+
+.nav-lesson.prev {
+    text-align: left;
+}
+
+.nav-lesson.next {
+    text-align: right;
+}
+
+.nav-lesson-label {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+.nav-lesson-title {
+    font-size: 14px;
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+/* Lesson Completion Checkbox */
+.lesson-complete-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    background: var(--bg-hover);
+    border-radius: 8px;
+    margin-bottom: 24px;
+    border: 1px solid var(--border-light);
+}
+
+.lesson-complete-wrapper:hover {
+    background: #e3f2fd;
+}
+
+.lesson-complete-label {
+    font-size: 14px;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+/* Table of Contents */
+.toc-wrapper {
+    position: sticky;
+    top: 80px;
+    max-height: calc(100vh - 100px);
+    overflow-y: auto;
+    padding: 20px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    margin-bottom: 24px;
+}
+
+.toc-wrapper h3 {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.toc-wrapper ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.toc-wrapper li {
+    margin: 0;
+    padding: 0;
+}
+
+.toc-wrapper a {
+    display: block;
+    padding: 6px 12px;
+    font-size: 13px;
+    color: var(--text-secondary);
+    text-decoration: none;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.toc-wrapper a:hover {
+    background: var(--bg-hover);
+    color: var(--primary);
+}
+
+.toc-wrapper a.active {
+    background: #e3f2fd;
+    color: var(--primary);
+    font-weight: 500;
+}
+
+/* Lesson completion badge */
+.lesson-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.lesson-status.completed {
+    background: #c8e6c9;
+    color: #2e7d32;
+}
+
+.lesson-status.in-progress {
+    background: #fff9c4;
+    color: #f57f17;
+}
+
+/* Smooth transitions */
+body {
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Dark mode code block adjustments */
+body.dark-mode .lesson-content code {
+    background: #2d2d2d;
+    border-color: var(--border-color);
+    color: #ff6b6b;
+}
+
+body.dark-mode .lesson-content pre {
+    background: #1a1a1a;
+    border-color: var(--border-color);
+}
+
+/* Mobile responsive for new features */
+@media (max-width: 768px) {
+    .lesson-navigation {
+        flex-direction: column;
+    }
+
+    .nav-lesson.prev,
+    .nav-lesson.next {
+        text-align: left;
+        width: 100%;
+    }
+
+    .toc-wrapper {
+        position: static;
+        max-height: none;
+    }
 }
