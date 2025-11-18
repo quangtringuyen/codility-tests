@@ -3,10 +3,10 @@
 {% block title %}{{ title }} - Codility Tracker{% endblock %}
 
 {% block content %}
-<div class="container">
-    <div class="lesson-header mb-4">
-        <a href="{{ url_for('lessons_index') }}" class="btn btn-outline-secondary mb-3">
-            <i class="bi bi-arrow-left"></i> Back to Lessons
+<div class="lesson-view">
+    <div class="lesson-header">
+        <a href="{{ url_for('lessons_index') }}" class="back-link">
+            <span class="bi-arrow-left"></span> Back to Lessons
         </a>
         <h1>{{ title }}</h1>
     </div>
@@ -14,133 +14,11 @@
     <div class="lesson-content">
         {{ content|safe }}
     </div>
+
+    <div style="margin-top: 32px; text-align: center;">
+        <a href="{{ url_for('lessons_index') }}" class="btn btn-outline-secondary">
+            <span class="bi-arrow-left"></span> Back to All Lessons
+        </a>
+    </div>
 </div>
-
-<style>
-    .lesson-content {
-        max-width: 900px;
-        margin: 0 auto;
-        padding: 2rem;
-        background: white;
-        border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-
-    .lesson-content h1 {
-        color: #2c3e50;
-        border-bottom: 3px solid #3498db;
-        padding-bottom: 0.5rem;
-        margin-bottom: 1.5rem;
-    }
-
-    .lesson-content h2 {
-        color: #34495e;
-        margin-top: 2rem;
-        margin-bottom: 1rem;
-        padding-bottom: 0.3rem;
-        border-bottom: 2px solid #ecf0f1;
-    }
-
-    .lesson-content h3 {
-        color: #555;
-        margin-top: 1.5rem;
-        margin-bottom: 0.8rem;
-    }
-
-    .lesson-content code {
-        background: #f8f9fa;
-        padding: 0.2rem 0.4rem;
-        border-radius: 3px;
-        font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
-        font-size: 0.9em;
-        color: #e83e8c;
-    }
-
-    .lesson-content pre {
-        background: #282c34;
-        color: #abb2bf;
-        padding: 1.5rem;
-        border-radius: 5px;
-        overflow-x: auto;
-        margin: 1rem 0;
-    }
-
-    .lesson-content pre code {
-        background: transparent;
-        color: inherit;
-        padding: 0;
-        font-size: 0.95em;
-        line-height: 1.5;
-    }
-
-    .lesson-content ul, .lesson-content ol {
-        margin: 1rem 0;
-        padding-left: 2rem;
-    }
-
-    .lesson-content li {
-        margin: 0.5rem 0;
-        line-height: 1.6;
-    }
-
-    .lesson-content blockquote {
-        border-left: 4px solid #3498db;
-        padding-left: 1rem;
-        margin: 1.5rem 0;
-        color: #555;
-        background: #f8f9fa;
-        padding: 1rem;
-        border-radius: 0 5px 5px 0;
-    }
-
-    .lesson-content table {
-        width: 100%;
-        border-collapse: collapse;
-        margin: 1.5rem 0;
-    }
-
-    .lesson-content table th,
-    .lesson-content table td {
-        border: 1px solid #ddd;
-        padding: 0.75rem;
-        text-align: left;
-    }
-
-    .lesson-content table th {
-        background: #3498db;
-        color: white;
-        font-weight: 600;
-    }
-
-    .lesson-content table tr:nth-child(even) {
-        background: #f8f9fa;
-    }
-
-    .lesson-content p {
-        line-height: 1.7;
-        margin: 1rem 0;
-    }
-
-    .lesson-content a {
-        color: #3498db;
-        text-decoration: none;
-    }
-
-    .lesson-content a:hover {
-        text-decoration: underline;
-    }
-
-    .lesson-header h1 {
-        color: #2c3e50;
-        margin-bottom: 1rem;
-    }
-
-    /* Syntax highlighting for code blocks */
-    .codehilite { background: #282c34; }
-    .codehilite .k { color: #c678dd; } /* keyword */
-    .codehilite .s { color: #98c379; } /* string */
-    .codehilite .c { color: #5c6370; } /* comment */
-    .codehilite .n { color: #e06c75; } /* name */
-    .codehilite .o { color: #56b6c2; } /* operator */
-</style>
 {% endblock %}

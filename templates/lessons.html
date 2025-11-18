@@ -3,9 +3,11 @@
 {% block title %}Lessons - Codility Tracker{% endblock %}
 
 {% block content %}
-<div class="container">
-    <h1>Training Lessons</h1>
-    <p class="text-muted">Comprehensive lessons covering all 8 weeks of Codility training with examples, challenges, and solutions.</p>
+<div class="lessons-page">
+    <div class="page-header">
+        <h1>Training Lessons</h1>
+        <p class="text-muted">Comprehensive TypeScript lessons covering all 8 weeks of Codility training with examples, challenges, and solutions.</p>
+    </div>
 
     <div class="row mt-4">
         {% for lesson in lessons %}
@@ -14,23 +16,23 @@
                 <div class="card-body">
                     <h5 class="card-title">
                         {% if lesson.week == 0 %}
-                            <i class="bi bi-star-fill text-warning"></i>
+                            <span class="bi-star-fill">⭐</span>
                         {% else %}
                             <span class="badge bg-primary">Week {{ lesson.week }}</span>
                         {% endif %}
                         {{ lesson.title }}
                     </h5>
-                    <p class="card-text text-muted">
+                    <p class="card-text">
                         {% if lesson.file == 'README.md' %}
-                            Overview of the complete 8-week training program
+                            Overview of the complete 8-week training program with study plan and exam tips
                         {% elif lesson.file == 'CHEAT_SHEET.md' %}
-                            Quick reference for common patterns and algorithms
+                            Quick reference guide for common algorithmic patterns and time complexities
                         {% else %}
-                            Detailed lessons with examples and practice challenges
+                            Detailed lessons with step-by-step explanations, code examples, and practice challenges
                         {% endif %}
                     </p>
                     <a href="{{ url_for('view_lesson', lesson_file=lesson.file) }}" class="btn btn-primary">
-                        <i class="bi bi-book-fill"></i> View Lesson
+                        <span class="bi-book-fill"></span> View Lesson
                     </a>
                 </div>
             </div>
@@ -38,25 +40,4 @@
         {% endfor %}
     </div>
 </div>
-
-<style>
-    .card {
-        transition: transform 0.2s, box-shadow 0.2s;
-    }
-
-    .card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    }
-
-    .card-title {
-        color: #333;
-        font-weight: 600;
-    }
-
-    .badge {
-        font-size: 0.9em;
-        padding: 0.4em 0.8em;
-    }
-</style>
 {% endblock %}
