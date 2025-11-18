@@ -285,13 +285,51 @@ async function runCode() {
 async function transpileAndRun(tsCode) {
     return new Promise((resolve) => {
         try {
-            // Simple TypeScript to JavaScript transpilation
-            // Remove type annotations for basic execution
-            let jsCode = tsCode
-                .replace(/: (number|string|boolean|any|\w+(\[\])?)/g, '')
-                .replace(/interface \w+ \{[^}]+\}/g, '')
-                .replace(/type \w+ = [^;]+;/g, '')
-                .replace(/<\w+>/g, '');
+            // Enhanced TypeScript to JavaScript transpilation
+            let jsCode = tsCode;
+
+            // First pass: Remove array type annotations in declarations
+            // const arr: number[] = [...] => const arr = [...]
+            jsCode = jsCode.replace(/\b(let|const|var)\s+(\w+)\s*:\s*[\w\[\]<>{}|&]+(\s*=)/g, '$1 $2$3');
+
+            // Remove type annotations from function parameters
+            // (A: number[]) => (A)
+            jsCode = jsCode.replace(/\(([^)]*)\)/g, (match, params) => {
+                if (!params.trim()) return match;
+                const cleanParams = params.split(',').map(param => {
+                    // Remove everything after : including the type
+                    return param.replace(/:\s*[\w\[\]<>{}|&\s]+/g, '').trim();
+                }).filter(p => p).join(', ');
+                return `(${cleanParams})`;
+            });
+
+            // Remove return type annotations: ): type { => ) {
+            jsCode = jsCode.replace(/\):\s*[\w\[\]<>{}|&\s]+\{/g, ') {');
+
+            // Remove type assertions: as type => (empty)
+            jsCode = jsCode.replace(/\s+as\s+[\w\[\]<>{}|&]+/g, '');
+
+            // Remove generic types: <Type> => (empty)
+            jsCode = jsCode.replace(/<[\w\[\]<>{}|&,\s]+>/g, '');
+
+            // Remove interface declarations
+            jsCode = jsCode.replace(/interface\s+\w+\s*\{[^}]*\}/g, '');
+
+            // Remove type declarations
+            jsCode = jsCode.replace(/type\s+\w+\s*=\s*[^;]+;/g, '');
+
+            // Remove enum declarations and convert to object
+            jsCode = jsCode.replace(/enum\s+(\w+)\s*\{([^}]+)\}/g, (match, name, body) => {
+                const entries = body.split(',').map(e => e.trim()).filter(e => e);
+                const obj = entries.map(e => {
+                    const [key, value] = e.split('=').map(s => s.trim());
+                    return value ? `${key}: ${value}` : `${key}: "${key}"`;
+                }).join(', ');
+                return `const ${name} = {${obj}};`;
+            });
+
+            // Remove readonly, public, private, protected modifiers
+            jsCode = jsCode.replace(/\b(readonly|public|private|protected)\s+/g, '');
 
             // Capture console output
             const logs = [];
@@ -308,13 +346,13 @@ async function transpileAndRun(tsCode) {
                 eval(jsCode);
 
                 resolve({
-                    output: logs.join('\\n'),
+                    output: logs.join('\n'),
                     error: null
                 });
             } catch (err) {
                 resolve({
-                    output: logs.join('\\n'),
-                    error: err.message
+                    output: logs.join('\n'),
+                    error: err.message + '\n\nTranspiled code:\n' + jsCode.substring(0, 500)
                 });
             } finally {
                 // Restore console
