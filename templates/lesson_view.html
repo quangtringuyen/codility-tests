@@ -3,46 +3,92 @@
 {% block title %}{{ title }} - Codility Tracker{% endblock %}
 
 {% block content %}
-<div class="lesson-view">
-    <div class="lesson-header">
-        <a href="{{ url_for('lessons_index') }}" class="back-link">
-            <span class="bi-arrow-left"></span> Back to Lessons
-        </a>
-        <h1>{{ title }}</h1>
+<!-- Toggle Playground Button (Floating) -->
+<button id="togglePlaygroundBtn" class="toggle-playground-btn" title="Toggle Code Playground">
+    <span class="toggle-icon">💻</span>
+    <span class="toggle-text">Code</span>
+</button>
+
+<div class="lesson-with-playground">
+    <!-- Main Lesson Content -->
+    <div class="lesson-view" id="lessonContent">
+        <div class="lesson-header">
+            <a href="{{ url_for('lessons_index') }}" class="back-link">
+                <span class="bi-arrow-left"></span> Back to Lessons
+            </a>
+            <h1>{{ title }}</h1>
+        </div>
+
+        <!-- Lesson Completion Checkbox -->
+        <div class="lesson-complete-wrapper">
+            <label class="checkbox-container">
+                <input type="checkbox" id="lessonComplete" data-lesson="{{ lesson_file }}">
+                <span class="checkmark"></span>
+                <span class="lesson-complete-label">Mark this lesson as complete</span>
+            </label>
+        </div>
+
+        <div class="lesson-content">
+            {{ content|safe }}
+        </div>
+
+        <!-- Previous/Next Navigation -->
+        <div class="lesson-navigation">
+            {% if prev_lesson %}
+            <a href="{{ url_for('view_lesson', lesson_file=prev_lesson.file) }}" class="nav-lesson prev">
+                <span class="nav-lesson-label">← Previous</span>
+                <span class="nav-lesson-title">{{ prev_lesson.title }}</span>
+            </a>
+            {% else %}
+            <div style="flex: 1;"></div>
+            {% endif %}
+
+            {% if next_lesson %}
+            <a href="{{ url_for('view_lesson', lesson_file=next_lesson.file) }}" class="nav-lesson next">
+                <span class="nav-lesson-label">Next →</span>
+                <span class="nav-lesson-title">{{ next_lesson.title }}</span>
+            </a>
+            {% else %}
+            <div style="flex: 1;"></div>
+            {% endif %}
+        </div>
     </div>
 
-    <!-- Lesson Completion Checkbox -->
-    <div class="lesson-complete-wrapper">
-        <label class="checkbox-container">
-            <input type="checkbox" id="lessonComplete" data-lesson="{{ lesson_file }}">
-            <span class="checkmark"></span>
-            <span class="lesson-complete-label">Mark this lesson as complete</span>
-        </label>
-    </div>
+    <!-- Sidebar Playground -->
+    <div class="sidebar-playground" id="sidebarPlayground">
+        <div class="playground-header-bar">
+            <span class="playground-title">💻 Code Playground</span>
+            <button id="closePlayground" class="close-playground-btn" title="Close playground">✕</button>
+        </div>
 
-    <div class="lesson-content">
-        {{ content|safe }}
-    </div>
+        <div class="sidebar-playground-content">
+            <div class="playground-toolbar-mini">
+                <select id="templateSelectorMini" class="template-select-mini">
+                    <option value="">Templates...</option>
+                    <option value="basic">Basic Function</option>
+                    <option value="array">Array Manipulation</option>
+                    <option value="prefix">Prefix Sum</option>
+                    <option value="twopointer">Two Pointer</option>
+                    <option value="stack">Stack Usage</option>
+                    <option value="hashmap">HashMap/Object</option>
+                </select>
+                <button id="runBtnMini" class="btn-mini btn-primary-mini">▶ Run</button>
+            </div>
 
-    <!-- Previous/Next Navigation -->
-    <div class="lesson-navigation">
-        {% if prev_lesson %}
-        <a href="{{ url_for('view_lesson', lesson_file=prev_lesson.file) }}" class="nav-lesson prev">
-            <span class="nav-lesson-label">← Previous</span>
-            <span class="nav-lesson-title">{{ prev_lesson.title }}</span>
-        </a>
-        {% else %}
-        <div style="flex: 1;"></div>
-        {% endif %}
+            <div id="editorMini" class="code-editor-mini"></div>
 
-        {% if next_lesson %}
-        <a href="{{ url_for('view_lesson', lesson_file=next_lesson.file) }}" class="nav-lesson next">
-            <span class="nav-lesson-label">Next →</span>
-            <span class="nav-lesson-title">{{ next_lesson.title }}</span>
-        </a>
-        {% else %}
-        <div style="flex: 1;"></div>
-        {% endif %}
+            <div class="output-section-mini">
+                <div class="output-header-mini">Output</div>
+                <div id="outputMini" class="code-output-mini">
+                    <div class="output-placeholder">Run code to see output...</div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs/loader.js"></script>
+<script src="{{ url_for('static', filename='js/lesson-playground.js') }}"></script>
 {% endblock %}
