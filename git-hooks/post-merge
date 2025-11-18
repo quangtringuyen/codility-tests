@@ -1,0 +1,65 @@
+#!/bin/bash
+# Git post-merge hook for automatic deployment
+# This hook runs automatically after 'git pull' or 'git merge'
+
+# Exit if not on main/master branch
+BRANCH=$(git rev-parse --abbrev-ref HEAD)
+if [[ "$BRANCH" != "main" && "$BRANCH" != "master" ]]; then
+    echo "⚠️  Not on main/master branch, skipping auto-deploy"
+    exit 0
+fi
+
+# Check if specific files changed
+changed_files="$(git diff-tree -r --name-only --no-commit-id ORIG_HEAD HEAD)"
+
+# Check if deployment is needed
+should_deploy=false
+
+# Check for Python code changes
+if echo "$changed_files" | grep -qE '\.py$'; then
+    echo "✓ Python code changed"
+    should_deploy=true
+fi
+
+# Check for requirements.txt changes
+if echo "$changed_files" | grep -q "requirements.txt"; then
+    echo "✓ Dependencies changed"
+    should_deploy=true
+fi
+
+# Check for template changes
+if echo "$changed_files" | grep -qE '^templates/'; then
+    echo "✓ Templates changed"
+    should_deploy=true
+fi
+
+# Check for static files (CSS, JS)
+if echo "$changed_files" | grep -qE '^static/'; then
+    echo "✓ Static files changed"
+    should_deploy=true
+fi
+
+# Check for Docker configuration changes
+if echo "$changed_files" | grep -qE 'docker-compose\.yml|Dockerfile'; then
+    echo "✓ Docker configuration changed"
+    should_deploy=true
+fi
+
+# Deploy if needed
+if [ "$should_deploy" = true ]; then
+    echo ""
+    echo "🚀 Changes detected, starting auto-deployment..."
+    echo ""
+
+    # Run deployment script
+    if [ -f "deploy.sh" ]; then
+        bash deploy.sh
+    else
+        echo "❌ deploy.sh not found!"
+        exit 1
+    fi
+else
+    echo "ℹ️  No deployment needed (only documentation or non-code files changed)"
+fi
+
+exit 0

@@ -9,6 +9,14 @@
     <span class="toggle-text">Code</span>
 </button>
 
+<!-- Edit Button (Floating) - Only visible to admins -->
+{% if current_user.is_authenticated and current_user.is_admin %}
+<button id="toggleEditBtn" class="toggle-edit-btn" title="Edit Lesson">
+    <span class="edit-icon">✏️</span>
+    <span class="edit-text">Edit</span>
+</button>
+{% endif %}
+
 <div class="lesson-with-playground">
     <!-- Main Lesson Content -->
     <div class="lesson-view" id="lessonContent">
@@ -28,8 +36,22 @@
             </label>
         </div>
 
-        <div class="lesson-content">
+        <!-- View Mode -->
+        <div class="lesson-content" id="lessonContentView">
             {{ content|safe }}
+        </div>
+
+        <!-- Edit Mode (Hidden by default) -->
+        <div class="lesson-editor-wrapper" id="lessonEditorWrapper" style="display: none;">
+            <div class="editor-toolbar">
+                <button id="saveLesson" class="btn btn-primary">💾 Save</button>
+                <button id="cancelEdit" class="btn btn-secondary">✕ Cancel</button>
+                <span class="save-status" id="saveStatus"></span>
+            </div>
+            <textarea id="lessonEditor" class="lesson-markdown-editor">{{ markdown_content }}</textarea>
+            <div class="editor-help">
+                <p><strong>Markdown Tips:</strong> Use # for headings, ** for bold, * for italic, ``` for code blocks, - for lists</p>
+            </div>
         </div>
 
         <!-- Previous/Next Navigation -->
@@ -91,4 +113,5 @@
 {% block scripts %}
 <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs/loader.js"></script>
 <script src="{{ url_for('static', filename='js/lesson-playground.js') }}"></script>
+<script src="{{ url_for('static', filename='js/lesson-editor.js') }}"></script>
 {% endblock %}

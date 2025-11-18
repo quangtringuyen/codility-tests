@@ -4,12 +4,35 @@ A comprehensive 8-week Codility training plan tracker built with Python Flask. T
 
 ## Features
 
+### **Core Training**
 - **8-Week Structured Plan**: Complete training curriculum from basics to advanced topics
 - **Progress Tracking**: Mark days and tasks as completed
 - **Mock Test Scoring**: Track your scores on practice tests
 - **Notes System**: Add notes for each day's learning
+
+### **Interactive Learning** 🆕
+- **Comprehensive Lessons**: 10 detailed lesson files with 120KB of content
+- **TypeScript Playground**: Full-featured code editor with Monaco (VS Code's editor)
+- **Sidebar Playground**: Code while reading lessons (Ctrl/Cmd + E)
+- **8 Code Templates**: Pre-built patterns for common algorithms
+- **Live Execution**: Run TypeScript code directly in browser
+
+### **Editing & Content Management** 🆕
+- **Secure Authentication**: Login system with password hashing
+- **Admin-Only Editing**: Edit lessons directly from web interface
+- **Markdown Editor**: Full-screen editor with save/cancel
+- **Flash Messages**: Visual feedback for all actions
+- **Session Management**: Persistent login with "remember me"
+- **Auto-Deployment**: Git hooks for automatic deployment on code pull 🚀
+
+### **User Experience**
+- **Dark Mode Toggle**: Light/dark theme switcher
+- **Reading Progress Bar**: Visual scroll indicator
+- **Copy Code Buttons**: One-click code copying
+- **Previous/Next Navigation**: Seamless lesson navigation
+- **Lesson Completion Tracking**: Mark lessons as complete
 - **Responsive Design**: Works on desktop and mobile devices
-- **Database Persistence**: Your progress is saved automatically
+- **Database Persistence**: All progress and edits saved automatically
 
 ## Training Plan Overview
 
@@ -58,10 +81,32 @@ cp .env.example .env
 python app.py
 ```
 
-6. Open your browser and navigate to:
+6. Create admin user (for editing lessons):
+```bash
+python create_admin.py
+```
+
+This creates the default admin account:
+- Username: `admin`
+- Password: `admin123`
+- ⚠️ **Change this password after first login!**
+
+7. Open your browser and navigate to:
 ```
 http://localhost:5000
 ```
+
+8. (Optional) Login to enable editing:
+- Go to `http://localhost:5000/login`
+- Use admin credentials
+- Edit button will appear on lesson pages
+
+9. (Optional) Set up auto-deployment:
+```bash
+./setup-auto-deploy.sh
+```
+
+This enables automatic deployment when pulling code updates. See [AUTO_DEPLOY.md](AUTO_DEPLOY.md) for details.
 
 ## Deployment
 

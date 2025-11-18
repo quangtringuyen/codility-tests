@@ -13,7 +13,10 @@
       "Bash(createdb:*)",
       "Bash(export FLASK_ENV=\"development\")",
       "Bash(python -c:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(bash -n:*)",
+      "Bash(test:*)",
+      "Bash(cat:*)"
     ],
     "deny": [],
     "ask": []

@@ -125,6 +125,85 @@ body {
     background: #e3f2fd;
 }
 
+.nav-user {
+    display: flex;
+    align-items: center;
+    padding: 8px 16px;
+    color: var(--text-primary);
+    font-weight: 500;
+    font-size: 14px;
+    background: var(--bg-hover);
+    border-radius: 4px;
+}
+
+/* Flash Messages */
+.flash-messages {
+    margin: 24px 0;
+}
+
+.flash-message {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 18px;
+    border-radius: 6px;
+    margin-bottom: 12px;
+    font-size: 14px;
+    font-weight: 500;
+    box-shadow: var(--shadow-sm);
+    animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(-10px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.flash-success {
+    background: rgba(0, 200, 83, 0.1);
+    color: var(--success);
+    border: 1px solid rgba(0, 200, 83, 0.3);
+}
+
+.flash-error {
+    background: rgba(211, 47, 47, 0.1);
+    color: var(--danger);
+    border: 1px solid rgba(211, 47, 47, 0.3);
+}
+
+.flash-info {
+    background: rgba(13, 71, 161, 0.1);
+    color: var(--primary);
+    border: 1px solid rgba(13, 71, 161, 0.3);
+}
+
+.flash-warning {
+    background: rgba(255, 109, 0, 0.1);
+    color: var(--warning);
+    border: 1px solid rgba(255, 109, 0, 0.3);
+}
+
+.flash-close {
+    background: none;
+    border: none;
+    color: inherit;
+    font-size: 18px;
+    cursor: pointer;
+    padding: 0 4px;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+}
+
+.flash-close:hover {
+    opacity: 1;
+}
+
 /* Dashboard */
 .dashboard {
     padding: 32px 0;
@@ -1551,6 +1630,114 @@ body.dark-mode .playground-tips code {
     margin-top: 2px;
 }
 
+/* Edit Button */
+.toggle-edit-btn {
+    position: fixed;
+    bottom: 24px;
+    right: 96px;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--warning) 0%, var(--danger) 100%);
+    border: none;
+    color: white;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    z-index: 999;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    font-size: 20px;
+}
+
+.toggle-edit-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+}
+
+.toggle-edit-btn.active {
+    background: var(--success);
+}
+
+.edit-text {
+    font-size: 9px;
+    font-weight: 600;
+    margin-top: 2px;
+}
+
+/* Lesson Editor */
+.lesson-editor-wrapper {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 24px;
+    margin: 24px 0;
+}
+
+.editor-toolbar {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 16px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.lesson-markdown-editor {
+    width: 100%;
+    min-height: 600px;
+    padding: 16px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background: var(--bg-main);
+    color: var(--text-primary);
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    resize: vertical;
+    transition: all 0.2s ease;
+}
+
+.lesson-markdown-editor:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(13, 71, 161, 0.1);
+}
+
+.editor-help {
+    margin-top: 12px;
+    padding: 12px;
+    background: var(--bg-hover);
+    border-radius: 6px;
+    font-size: 13px;
+    color: var(--text-muted);
+}
+
+.save-status {
+    margin-left: auto;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 6px 12px;
+    border-radius: 4px;
+}
+
+.save-status.saving {
+    color: var(--primary);
+    background: rgba(13, 71, 161, 0.1);
+}
+
+.save-status.success {
+    color: var(--success);
+    background: rgba(0, 200, 83, 0.1);
+}
+
+.save-status.error {
+    color: var(--danger);
+    background: rgba(211, 47, 47, 0.1);
+}
+
 .lesson-with-playground {
     display: flex;
     gap: 0;
@@ -1748,6 +1935,12 @@ body.dark-mode .playground-tips code {
     }
 
     .toggle-playground-btn {
-        bottom: 80px;
+        bottom: 24px;
+        right: 24px;
+    }
+
+    .toggle-edit-btn {
+        bottom: 96px;
+        right: 24px;
     }
 }

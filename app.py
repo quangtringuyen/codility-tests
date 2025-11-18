@@ -1,6 +1,9 @@
-from flask import Flask, render_template, request, redirect, url_for, jsonify
+from flask import Flask, render_template, request, redirect, url_for, jsonify, flash, session
 from flask_sqlalchemy import SQLAlchemy
+from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
+from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
+from functools import wraps
 import os
 import markdown
 from pathlib import Path
@@ -13,8 +16,28 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-secret-key-change-in-production')
 
 db = SQLAlchemy(app)
+login_manager = LoginManager(app)
+login_manager.login_view = 'login'
+login_manager.login_message = 'Please log in to access this page.'
 
 # Models
+class User(UserMixin, db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(80), unique=True, nullable=False)
+    password_hash = db.Column(db.String(200), nullable=False)
+    is_admin = db.Column(db.Boolean, default=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
 class DayProgress(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     week = db.Column(db.Integer, nullable=False)
@@ -31,6 +54,15 @@ class TaskProgress(db.Model):
     completed = db.Column(db.Boolean, default=False)
     score = db.Column(db.Integer)
     notes = db.Column(db.Text, default='')
+
+# Admin required decorator
+def admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not current_user.is_authenticated or not current_user.is_admin:
+            return jsonify({'success': False, 'error': 'Admin access required'}), 403
+        return f(*args, **kwargs)
+    return decorated_function
 
 # Training plan data structure
 TRAINING_PLAN = {
@@ -382,11 +414,82 @@ def view_lesson(lesson_file):
         return render_template('lesson_view.html',
                              title=title,
                              content=html_content,
+                             markdown_content=content,
                              lesson_file=lesson_file,
                              prev_lesson=prev_lesson,
                              next_lesson=next_lesson)
     except Exception as e:
         return f"Error loading lesson: {str(e)}", 500
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    """User login"""
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+
+        user = User.query.filter_by(username=username).first()
+
+        if user and user.check_password(password):
+            login_user(user, remember=True)
+            flash('Logged in successfully!', 'success')
+            next_page = request.args.get('next')
+            return redirect(next_page or url_for('index'))
+        else:
+            flash('Invalid username or password', 'error')
+
+    return render_template('login.html')
+
+@app.route('/logout')
+@login_required
+def logout():
+    """User logout"""
+    logout_user()
+    flash('Logged out successfully!', 'success')
+    return redirect(url_for('index'))
+
+@app.route('/api/save_lesson', methods=['POST'])
+@admin_required
+def save_lesson():
+    """Save edited lesson content - Admin only"""
+    data = request.json
+    lesson_file = data.get('lesson_file')
+    content = data.get('content')
+
+    lessons_dir = Path(__file__).parent / 'lessons'
+    lesson_path = lessons_dir / lesson_file
+
+    # Security: prevent directory traversal
+    if '..' in lesson_file or not lesson_file.endswith('.md'):
+        return jsonify({'success': False, 'error': 'Invalid lesson file'}), 400
+
+    try:
+        with open(lesson_path, 'w', encoding='utf-8') as f:
+            f.write(content)
+        return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/get_lesson_content', methods=['GET'])
+def get_lesson_content():
+    """Get raw markdown content for editing"""
+    lesson_file = request.args.get('lesson_file')
+    lessons_dir = Path(__file__).parent / 'lessons'
+    lesson_path = lessons_dir / lesson_file
+
+    # Security: prevent directory traversal
+    if '..' in lesson_file or not lesson_file.endswith('.md'):
+        return jsonify({'success': False, 'error': 'Invalid lesson file'}), 400
+
+    try:
+        with open(lesson_path, 'r', encoding='utf-8') as f:
+            content = f.read()
+        return jsonify({'success': True, 'content': content})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 if __name__ == '__main__':
     with app.app_context():
