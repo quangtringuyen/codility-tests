@@ -18,7 +18,15 @@
       "Bash(test:*)",
       "Bash(cat:*)",
       "Bash(./venv/bin/pip:*)",
-      "Bash(unset:*)"
+      "Bash(unset:*)",
+      "Bash(/dev/null)",
+      "Bash(sqlite3:*)",
+      "Bash(./check_login_status.sh)",
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$(cat <<''EOF''\nAdd SEO meta tags and robots.txt to improve website categorization\n\n- Add comprehensive meta tags for education/professional development category\n- Include description, keywords, and classification metadata\n- Add robots.txt file for better web crawler understanding\n- Helps bypass corporate firewall \"Miscellaneous/Unknown\" warnings\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(git push)",
+      "Bash(.gitignore)",
+      "Bash(git commit:*)"
     ],
     "deny": [],
     "ask": []
