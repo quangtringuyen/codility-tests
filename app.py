@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, jsonify, flash, session
+from flask import Flask, render_template, request, redirect, url_for, jsonify, flash, session, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -490,6 +490,11 @@ def get_lesson_content():
         return jsonify({'success': True, 'content': content})
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/robots.txt')
+def robots_txt():
+    """Serve robots.txt for better web categorization"""
+    return send_from_directory(app.static_folder, 'robots.txt')
 
 if __name__ == '__main__':
     with app.app_context():
