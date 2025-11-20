@@ -10,6 +10,9 @@ const lessonEditor = document.getElementById('lessonEditor');
 const saveBtn = document.getElementById('saveLesson');
 const cancelBtn = document.getElementById('cancelEdit');
 const saveStatus = document.getElementById('saveStatus');
+const uploadImageBtn = document.getElementById('uploadImageBtn');
+const insertImageLinkBtn = document.getElementById('insertImageLinkBtn');
+const imageFileInput = document.getElementById('imageFileInput');
 
 // Toggle Edit Mode
 toggleEditBtn?.addEventListener('click', toggleEditMode);
@@ -125,5 +128,148 @@ lessonEditor?.addEventListener('keydown', (e) => {
         this.selectionStart = this.selectionEnd = start + 4;
     }
 });
+
+// ===== IMAGE HANDLING FUNCTIONALITY =====
+
+// Helper function to insert text at cursor position
+function insertTextAtCursor(textarea, text) {
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const value = textarea.value;
+
+    textarea.value = value.substring(0, start) + text + value.substring(end);
+
+    // Set cursor position after inserted text
+    const newCursorPos = start + text.length;
+    textarea.selectionStart = textarea.selectionEnd = newCursorPos;
+
+    // Trigger input event to resize textarea
+    textarea.dispatchEvent(new Event('input'));
+    textarea.focus();
+}
+
+// Upload Image Button - Opens file picker
+uploadImageBtn?.addEventListener('click', () => {
+    imageFileInput.click();
+});
+
+// Handle file selection
+imageFileInput?.addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    await uploadImageFile(file);
+
+    // Reset input so same file can be uploaded again
+    imageFileInput.value = '';
+});
+
+// Insert Image Link Button - Prompts for URL
+insertImageLinkBtn?.addEventListener('click', () => {
+    const url = prompt('Enter image URL:');
+    if (url) {
+        const altText = prompt('Enter alt text (optional):') || 'image';
+        const markdown = `![${altText}](${url})`;
+        insertTextAtCursor(lessonEditor, markdown);
+    }
+});
+
+// Paste Image Support - Handle Ctrl+V with images
+lessonEditor?.addEventListener('paste', async (e) => {
+    const items = e.clipboardData?.items;
+    if (!items) return;
+
+    // Look for image in clipboard
+    for (let i = 0; i < items.length; i++) {
+        if (items[i].type.indexOf('image') !== -1) {
+            e.preventDefault();
+
+            const blob = items[i].getAsFile();
+            await uploadImageFile(blob);
+
+            break;
+        }
+    }
+});
+
+// Drag and Drop Support
+lessonEditor?.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    lessonEditor.classList.add('drag-over');
+});
+
+lessonEditor?.addEventListener('dragleave', (e) => {
+    lessonEditor.classList.remove('drag-over');
+});
+
+lessonEditor?.addEventListener('drop', async (e) => {
+    e.preventDefault();
+    lessonEditor.classList.remove('drag-over');
+
+    const files = e.dataTransfer?.files;
+    if (!files || files.length === 0) return;
+
+    // Upload first file if it's an image
+    const file = files[0];
+    if (file.type.indexOf('image') !== -1) {
+        await uploadImageFile(file);
+    }
+});
+
+// Upload image file to server
+async function uploadImageFile(file) {
+    if (!file) return;
+
+    // Show uploading status
+    const originalStatus = saveStatus.textContent;
+    saveStatus.textContent = '📤 Uploading image...';
+    saveStatus.className = 'save-status saving';
+
+    try {
+        const formData = new FormData();
+        formData.append('image', file);
+
+        const response = await fetch('/api/upload_image', {
+            method: 'POST',
+            body: formData
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            // Insert markdown image syntax
+            const filename = file.name.replace(/\.[^/.]+$/, ''); // Remove extension
+            const altText = filename || 'image';
+            const markdown = `![${altText}](${result.url})`;
+            insertTextAtCursor(lessonEditor, markdown);
+
+            // Success feedback
+            saveStatus.textContent = '✓ Image uploaded!';
+            saveStatus.className = 'save-status success';
+
+            setTimeout(() => {
+                saveStatus.textContent = originalStatus;
+                saveStatus.className = 'save-status';
+            }, 2000);
+        } else {
+            // Error feedback
+            saveStatus.textContent = '✕ Upload failed: ' + (result.error || 'Unknown error');
+            saveStatus.className = 'save-status error';
+
+            setTimeout(() => {
+                saveStatus.textContent = originalStatus;
+                saveStatus.className = 'save-status';
+            }, 3000);
+        }
+    } catch (err) {
+        saveStatus.textContent = '✕ Upload error: ' + err.message;
+        saveStatus.className = 'save-status error';
+
+        setTimeout(() => {
+            saveStatus.textContent = originalStatus;
+            saveStatus.className = 'save-status';
+        }, 3000);
+    }
+}
 
 console.log('Lesson Editor initialized ✓');

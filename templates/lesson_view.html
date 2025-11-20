@@ -46,11 +46,16 @@
             <div class="editor-toolbar">
                 <button id="saveLesson" class="btn btn-primary">💾 Save</button>
                 <button id="cancelEdit" class="btn btn-secondary">✕ Cancel</button>
+                <div class="toolbar-divider"></div>
+                <button id="uploadImageBtn" class="btn btn-icon" title="Upload Image">📤 Upload</button>
+                <button id="insertImageLinkBtn" class="btn btn-icon" title="Insert Image Link">🔗 Link</button>
                 <span class="save-status" id="saveStatus"></span>
             </div>
+            <input type="file" id="imageFileInput" accept="image/*" style="display: none;">
             <textarea id="lessonEditor" class="lesson-markdown-editor">{{ markdown_content }}</textarea>
             <div class="editor-help">
                 <p><strong>Markdown Tips:</strong> Use # for headings, ** for bold, * for italic, ``` for code blocks, - for lists</p>
+                <p><strong>Images:</strong> Upload files, paste images directly (Ctrl+V), or insert image links. Markdown: ![alt text](image-url)</p>
             </div>
         </div>
 

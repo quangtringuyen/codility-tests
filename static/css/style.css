@@ -1728,6 +1728,56 @@ body.dark-mode .playground-tips code {
     background: rgba(13, 71, 161, 0.1);
 }
 
+/* Image upload toolbar styles */
+.toolbar-divider {
+    width: 1px;
+    height: 28px;
+    background: var(--border-color);
+    margin: 0 4px;
+}
+
+.btn-icon {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    font-size: 13px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: var(--text-primary);
+}
+
+.btn-icon:hover {
+    background: var(--bg-hover);
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.btn-icon:active {
+    transform: translateY(1px);
+}
+
+/* Drag and drop visual feedback */
+.lesson-markdown-editor.drag-over {
+    border-color: var(--primary);
+    background: rgba(13, 71, 161, 0.05);
+    box-shadow: 0 0 0 3px rgba(13, 71, 161, 0.1);
+}
+
+/* Dark mode adjustments for image buttons */
+body.dark-mode .btn-icon {
+    background: var(--bg-card);
+    border-color: var(--border-color);
+}
+
+body.dark-mode .btn-icon:hover {
+    background: var(--bg-hover);
+    border-color: var(--primary);
+}
+
 .save-status.success {
     color: var(--success);
     background: rgba(0, 200, 83, 0.1);
