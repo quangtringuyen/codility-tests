@@ -29,12 +29,52 @@ function toggleEditMode() {
 
         // Auto-resize textarea
         autoResizeTextarea();
+
+        // Enable sticky toolbar scroll listener
+        enableStickyToolbar();
     } else {
         // Exit edit mode
         lessonContentView.style.display = 'block';
         lessonEditorWrapper.style.display = 'none';
         toggleEditBtn.classList.remove('active');
         toggleEditBtn.querySelector('.edit-text').textContent = 'Edit';
+
+        // Disable sticky toolbar scroll listener
+        disableStickyToolbar();
+    }
+}
+
+// Sticky toolbar on scroll
+let scrollListener = null;
+
+function enableStickyToolbar() {
+    const editorToolbar = document.querySelector('.editor-toolbar');
+    if (!editorToolbar) return;
+
+    scrollListener = () => {
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        const toolbarRect = editorToolbar.getBoundingClientRect();
+
+        // Add 'scrolled' class when toolbar is stuck to top
+        if (toolbarRect.top <= 0) {
+            editorToolbar.classList.add('scrolled');
+        } else {
+            editorToolbar.classList.remove('scrolled');
+        }
+    };
+
+    window.addEventListener('scroll', scrollListener);
+}
+
+function disableStickyToolbar() {
+    if (scrollListener) {
+        window.removeEventListener('scroll', scrollListener);
+        scrollListener = null;
+    }
+
+    const editorToolbar = document.querySelector('.editor-toolbar');
+    if (editorToolbar) {
+        editorToolbar.classList.remove('scrolled');
     }
 }
 

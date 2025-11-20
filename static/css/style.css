@@ -958,6 +958,21 @@ body {
     font-weight: 600;
 }
 
+.lesson-content img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 24px auto;
+    border-radius: 8px;
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--border-light);
+}
+
+.lesson-content img:hover {
+    box-shadow: var(--shadow-lg);
+    transition: box-shadow 0.3s ease;
+}
+
 /* Syntax highlighting - Codility terminal style */
 .codehilite {
     background: #263238;
@@ -1673,7 +1688,9 @@ body.dark-mode .playground-tips code {
     border: 1px solid var(--border-color);
     border-radius: 8px;
     padding: 24px;
+    padding-top: 16px;
     margin: 24px 0;
+    position: relative;
 }
 
 .editor-toolbar {
@@ -1681,8 +1698,20 @@ body.dark-mode .playground-tips code {
     gap: 12px;
     align-items: center;
     margin-bottom: 16px;
+    padding: 16px;
+    padding-top: 0;
     padding-bottom: 16px;
     border-bottom: 1px solid var(--border-color);
+    background: var(--bg-card);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    transition: box-shadow 0.2s ease;
+}
+
+.editor-toolbar.scrolled {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-bottom: 2px solid var(--primary);
 }
 
 .lesson-markdown-editor {
